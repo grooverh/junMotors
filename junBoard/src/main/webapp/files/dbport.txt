@@ -1,0 +1,3 @@
+tns port 1521
+mts port 2030
+http port 8081

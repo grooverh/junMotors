@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="board">
+	<typeAlias alias="BoardModel" type="com.test.board.model.BoardModel"/>
+	<typeAlias alias="BoardCommentModel" type="com.test.board.model.BoardCommentModel"/>	
+	<!--list backup
+	<select id="getBoardList" parameterClass="java.util.HashMap" resultClass="BoardModel">
+		select 
+			b.board_no, b.board_writer, b.board_title,
+			b.board_content, b.board_hit, b.board_recommendcount,
+			TO_CHAR(b.board_regdate,'YYYY-MM-DD, hh24:mi:ss') board_regdate, 
+			count(c.comment_no) as "comment",
+			b.boardType_num,b.board_file1,b.board_file2, b.rnum
+		from (select 
+				a.board_no, a.board_writer, a.board_title,
+				a.board_content, a.board_hit, a.board_recommendcount,
+				a.board_regdate, a.boardType_num, a.board_file1, a.board_file2, rownum rnum
+			from (select 
+					board_no, board_writer, board_title,
+					board_content, board_hit, board_recommendcount,
+					board_regdate, boardType_num, board_file1, board_file2
+				from board_t
+        		order by board_no desc) a
+        ) b left outer join board_comment c on b.board_no = c.linkedarticlenum
+	    where rnum between #startArticleNum# and #endArticleNum#
+	    group by
+	    	b.board_no, b.board_writer, b.board_title, 
+	    	b.board_content, b.board_hit, b.board_recommendcount, 
+	    	b.board_regdate, b.rnum, b.boardType_num,b.board_file1,b.board_file2
+	    order by b.board_no desc
+	</select>
+	-->
+	<select id="getBoardList" parameterClass="java.util.HashMap" resultClass="BoardModel">
+		select 
+			d.board_no, d.board_writer, d.board_title,
+			d.board_content, d.board_hit, d.board_recommendcount,
+			TO_CHAR(d.board_regdate,'YYYY-MM-DD, hh24:mi:ss') board_regdate, 
+			count(e.comment_no) as "comment",
+			d.boardType_num,d.boardtype_name,d.board_file1,d.board_file2, d.rnum
+		from (select 
+				c.board_no, c.board_writer, c.board_title,
+				c.board_content, c.board_hit, c.board_recommendcount,
+				c.board_regdate, c.boardType_num, c.board_file1, c.board_file2, c.boardtype_name, rownum rnum
+			from (select 
+					a.board_no, a.board_writer, a.board_title,
+					a.board_content, a.board_hit, a.board_recommendcount,
+					a.board_regdate, a.boardType_num, a.board_file1, a.board_file2,b.BOARDTYPE_NAME
+				from board_t a ,BOARDTYPE_T b WHERE b.BOARDTYPE_num = a.BOARDTYPE_NUM
+        		order by board_no desc) c
+        ) d left outer join board_comment e on d.board_no = e.linkedarticlenum
+	    where rnum between #startArticleNum# and #endArticleNum#
+	    group by
+	    	d.board_no, d.board_writer, d.board_title, 
+	    	d.board_content, d.board_hit, d.board_recommendcount, 
+	    	d.board_regdate, d.rnum, d.boardType_num,d.boardtype_name,d.board_file1,d.board_file2
+	    order by d.board_no desc
+	</select>
+	<select id="getTotalNum" resultClass="int">
+		select 
+			count(board_no)
+		from board_t
+	</select>
+	<select id="getBoardListType" parameterClass="java.util.HashMap" resultClass="BoardModel" >
+		select 
+			d.board_no, d.board_writer, d.board_title,
+			d.board_content, d.board_hit, d.board_recommendcount,
+			TO_CHAR(d.board_regdate,'YYYY-MM-DD, hh24:mi:ss') board_regdate, 
+			count(e.comment_no) as "comment",
+			d.boardType_num,d.boardtype_name,d.board_file1,d.board_file2, d.rnum
+		from (select 
+				c.board_no, c.board_writer, c.board_title,
+				c.board_content, c.board_hit, c.board_recommendcount,
+				c.board_regdate, c.boardType_num, c.board_file1, c.board_file2, c.boardtype_name, rownum rnum
+			from (select 
+					a.board_no, a.board_writer, a.board_title,
+					a.board_content, a.board_hit, a.board_recommendcount,
+					a.board_regdate, a.boardType_num, a.board_file1, a.board_file2,b.BOARDTYPE_NAME
+				from board_t a ,BOARDTYPE_T b WHERE b.BOARDTYPE_num = a.BOARDTYPE_NUM AND a.BOARDTYPE_NUM = #boardtype_num#
+        		order by board_no desc) c
+        ) d left outer join board_comment e on d.board_no = e.linkedarticlenum
+	    where rnum between #startArticleNum# and #endArticleNum#
+	    group by
+	    	d.board_no, d.board_writer, d.board_title, 
+	    	d.board_content, d.board_hit, d.board_recommendcount, 
+	    	d.board_regdate, d.rnum, d.boardType_num,d.boardtype_name,d.board_file1,d.board_file2
+	    order by d.board_no desc
+	</select>
+	<select id="getTotalNumType" resultClass="int" parameterClass="int">
+		select 
+			count(board_no)
+		from board_t where boardtype_num = #boardtype_num#
+	</select>
+	<insert id="writeArticle" parameterClass="BoardModel">
+		insert into board_t(board_no, board_password,board_writer, board_title, board_content, board_hit, 
+		board_recommendcount, board_regdate, boardtype_num,board_file1,board_file2)
+			values(BOARDLIST_SEQ.nextVal,#board_password#, #board_writer#, #board_title#,#board_content#, 0, 0, sysdate, #boardtype_num#,#board_file1#,#board_file2#)
+	</insert>
+	
+	<select id="searchArticle" parameterClass="java.util.HashMap" resultClass="BoardModel">
+		select 
+			b.board_no, b.board_writer, b.board_title,
+			b.board_content, b.board_hit, b.board_recommendcount,
+			to_char(b.board_regdate, 'YYYY-MM-DD HH:MI:SS') board_regdate, 
+			b.boardtype_num, count(c.COMMENT_NO) as "COMMENT" , b.rnum
+		from (select 
+				a.board_no, a.board_writer, a.board_title,
+				a.board_content, a.board_hit, a.board_recommendcount,
+				a.board_regdate,a.boardtype_num, rownum rnum
+			from (select 
+					board_no, board_writer, board_title,
+					board_content, board_hit, board_recommendcount,
+					board_regdate, boardtype_num
+				from board_t
+				where $type$ like '%$keyword$%'
+        		order by board_no desc) a
+        ) b left outer join board_comment c on b.board_no = c.linkedarticlenum
+	    where rnum between #startArticleNum# and #endArticleNum#
+	    group by 
+	    	b.board_no, b.board_writer, b.board_title, 
+	    	b.board_content, b.board_hit, b.board_recommendcount, 
+	    	b.board_regdate, b.rnum, b.boardType_num
+	    order by b.board_no desc	
+	</select>
+	
+	<select id="getSearchTotalNum" resultClass="int">
+		select 
+			count(board_no) 
+		from board_t
+		where $type$ like '%$keyword$%'
+	</select>
+	
+	<select id="getOneArticle" parameterClass="int" resultClass="BoardModel">
+		select
+			board_no,
+			board_writer,
+			board_title,
+			board_content,
+			board_hit,
+			board_recommendcount,
+			board_regdate,
+			boardtype_num,
+			board_password,
+			board_file1,
+			board_file2
+		from board_t
+    	where board_no = #board_no#
+	</select>
+	<update id="updateHitcount" parameterClass="java.util.HashMap">
+		update 
+			board_t 
+		set board_hit = #board_hit#
+		where board_no = #board_no#
+	</update>
+	
+	<select id="getCommentList" parameterClass="int" resultClass="BoardCommentModel">
+		select 
+			comment_no, comment_writer, comment_content, 
+			comment_regdate, linkedArticleNum
+		from board_comment
+  		where linkedArticleNum = #comment_no#
+  		order by comment_no desc
+	</select>
+	
+	<delete id="deleteArticle" parameterClass="int">
+		delete
+		from board_t
+		where board_no = #board_no#	
+	</delete>
+	
+	<update id="modifyArticle" parameterClass="BoardModel">
+		update board_t
+		set board_title = #board_title#,
+			board_content = #board_content#,
+			board_file1 = #board_file1#
+		where board_no = #board_no#
+	</update>
+	
+	<update id="updateRecommendcount" parameterClass="java.util.HashMap">
+		update
+			board_t
+		set board_RECOMMENDCOUNT = #board_RECOMMENDCOUNT#
+		where board_no = #board_no#
+	</update>
+	
+	<insert id="writeComment" parameterClass="BoardCommentModel">
+		insert into board_comment(comment_no, comment_writer, comment_content, comment_regdate, linkedArticleNum)
+			values(BOARDCOMMENT_SEQ.nextVal, #comment_writer#, #comment_content#, sysdate, #linkedArticleNum#)
+	</insert>
+	
+	<select id="getOneComment" parameterClass="int" resultClass="BoardCommentModel">
+		select 
+			comment_no, comment_writer,
+			comment_content, 
+			comment_regdate, linkedArticleNum
+		from board_comment
+  		where comment_no = #comment_no#		
+	</select>
+	
+	<delete id="deleteComment" parameterClass="int">
+		delete
+		from board_comment
+		where comment_no = #comment_no#
+	</delete>
+	
+	
+</sqlMap>
+
+
+
+
+
+
+
