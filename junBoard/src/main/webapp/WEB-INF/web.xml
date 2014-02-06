@@ -36,13 +36,14 @@
 			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
-	</servlet>
-		
+	 </servlet>
+
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/*</url-pattern>		
 		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
+	
 	
 	<servlet-mapping>
   		<servlet-name>jsp</servlet-name>
@@ -53,5 +54,6 @@
   		<servlet-name>jsp</servlet-name>
   		<servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
 	</servlet>
- 
+ 	
+ 	
 </web-app>

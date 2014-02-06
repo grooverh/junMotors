@@ -1,4 +1,5 @@
-#Tue Feb 04 13:03:57 KST 2014
 eclipse.preferences.version=1
 encoding//src/main/java/com/test/board/controller/BoardController.java=UTF-8
 encoding//src/main/webapp/WEB-INF/views/header.jsp=UTF-8
+encoding/<project>=UTF-8
+separateDerivedEncodings=true

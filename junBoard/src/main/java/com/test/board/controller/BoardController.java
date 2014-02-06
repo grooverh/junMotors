@@ -44,8 +44,8 @@ public class BoardController {
 	//
 	
 	@RequestMapping("/boardtest.do")
-	public String boardTtest(@ModelAttribute("BoardModel") BoardModel boardModel){		
-		return "/root";
+	public ModelAndView boardTtest(@ModelAttribute("BoardModel") BoardModel boardModel){
+		return new ModelAndView("hello");
 	}	
 	
 	@RequestMapping("/list.do")

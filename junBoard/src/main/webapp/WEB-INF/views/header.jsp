@@ -2,6 +2,11 @@
     <div class="site">
          <div class="logo">
              <a href="/"><img src="images/logo.png" alt="springsprout" /></a>
+             
+	<div class="navBar">
+			junMotors		
+	</div>		             
+             
          </div>
          <div class="actions">
              <a href="/">Home</a>
